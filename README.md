@@ -1,3 +1,4 @@
 # TravelPlanner
 
-** Team Member **
+**Team Member:**
+Yang Lyu, 
