@@ -4,5 +4,5 @@
 The goal of this project is to provide a platform for users to help make plans for their travel route
 
 **Team Member:**\
-Yang Lyu, Yingjie Chen, Xinyi Wang, Florence Li，Sissi Wang,
+Yang Lyu, Yingjie Chen, Xinyi Wang, Florence Li，Sissi Wang
 
