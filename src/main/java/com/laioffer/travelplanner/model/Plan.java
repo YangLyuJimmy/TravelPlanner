@@ -113,6 +113,7 @@ public class Plan implements Serializable {
         @JsonProperty("user")
         private User user;
 
+        @JsonProperty("daily_plan_list")
         private List<DailyPlan> dailyPlanList;
 
         public Builder setId(Long id) {

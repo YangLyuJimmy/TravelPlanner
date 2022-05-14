@@ -1,9 +1,8 @@
 package com.laioffer.travelplanner.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,6 +24,9 @@ public class User implements Serializable {
     @JsonIgnore
     private boolean enabled;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    private List<Plan> planList;
+
     public User() {}
 
     private User(Builder builder) {
@@ -34,6 +36,7 @@ public class User implements Serializable {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
         this.enabled = builder.enabled;
+        this.planList = builder.planList;
     }
 
     public String getUsername() {
@@ -87,6 +90,14 @@ public class User implements Serializable {
         return this;
     }
 
+    public List<Plan> getPlanList() {
+        return planList;
+    }
+
+    public void setPlanList(List<Plan> planList) {
+        this.planList = planList;
+    }
+
     public static class Builder {
         @JsonProperty("username")
         private String username;
@@ -105,6 +116,9 @@ public class User implements Serializable {
 
         @JsonProperty("enabled")
         private boolean enabled;
+
+        @JsonProperty("plan_list")
+        private List<Plan> planList;
 
         public Builder setUsername(String username) {
             this.username = username;
@@ -133,6 +147,11 @@ public class User implements Serializable {
 
         public Builder setEnabled(boolean enabled) {
             this.enabled = enabled;
+            return this;
+        }
+
+        public Builder setPlanList(List<Plan> planList) {
+            this.planList = planList;
             return this;
         }
 

@@ -32,6 +32,10 @@ public class Point implements Serializable {
     @ManyToMany(mappedBy = "pointSet")
     private Set<DailyPlan> dailyPlanSet= new HashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "daily_plan_id")
+    private Plan plan;
+
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "category_of_point", joinColumns = { @JoinColumn(name = "point_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
@@ -122,7 +126,7 @@ public class Point implements Serializable {
     }
 
     public static class Builder {
-        //Here @JsonProperty() match each field with the name in ResponseBody of TravelAdvisor API!
+        // Here @JsonProperty() match each field with the name in ResponseBody of TravelAdvisor API!
         @JsonProperty("location_id")
         private Long id;
         @JsonProperty("name")
@@ -136,6 +140,7 @@ public class Point implements Serializable {
         @JsonProperty("latitude")
         private Float latitude;
 
+        @JsonProperty("point_images")
         private List<PointImage> pointImages;
 
         public Builder setId(Long id) {
