@@ -4,10 +4,11 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,13 +23,14 @@ public class Plan implements Serializable {
     private LocalDate startDate;
     private LocalDate endDate;
     private String note;
-    private LocalDateTime createTime;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     // See how a reservation stores stayReservedDates in com.laioffer.staybooking.service.ReservationService
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<DailyPlan> dailyPlanList;
 
     public Plan() {}
@@ -38,7 +40,6 @@ public class Plan implements Serializable {
         this.startDate = builder.startDate;
         this.endDate = builder.endDate;
         this.note = builder.note;
-        this.createTime = builder.createTime;
         this.user = builder.user;
         this.dailyPlanList = builder.dailyPlanList;
     }
@@ -75,14 +76,6 @@ public class Plan implements Serializable {
         this.note = note;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
     public User getUser() {
         return user;
     }
@@ -108,8 +101,6 @@ public class Plan implements Serializable {
         private LocalDate endDate;
         @JsonProperty("note")
         private String note;
-        @JsonProperty("create_time")
-        private LocalDateTime createTime;
         @JsonProperty("user")
         private User user;
 
@@ -133,11 +124,6 @@ public class Plan implements Serializable {
 
         public Builder setNote(String note) {
             this.note = note;
-            return this;
-        }
-
-        public Builder setCreateTime(LocalDateTime createTime) {
-            this.createTime = createTime;
             return this;
         }
 

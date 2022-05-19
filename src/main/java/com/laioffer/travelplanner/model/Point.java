@@ -1,6 +1,5 @@
 package com.laioffer.travelplanner.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -37,7 +36,7 @@ public class Point implements Serializable {
     private Plan plan;
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "category_of_point", joinColumns = { @JoinColumn(name = "point_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
     Set<Category> categorySet = new HashSet<>();
 

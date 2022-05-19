@@ -4,9 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "daily_plan")
@@ -25,9 +23,9 @@ public class DailyPlan implements Serializable {
     private LocalDate date;
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "daily_plan_points", joinColumns = {@JoinColumn(name = "daily_plan_id")}, inverseJoinColumns = {@JoinColumn(name = "point_id")})
-    Set<Point> pointSet = new HashSet<>();
+    List<Point> pointSet = new ArrayList<>();
 
     public DailyPlan() {}
 
