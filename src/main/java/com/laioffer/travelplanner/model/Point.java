@@ -28,12 +28,8 @@ public class Point implements Serializable {
     private List<PointImage> pointImages;
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
-    @ManyToMany(mappedBy = "pointSet")
+    @ManyToMany(mappedBy = "pointList")
     private Set<DailyPlan> dailyPlanSet= new HashSet<>();
-
-    @ManyToOne
-    @JoinColumn(name = "daily_plan_id")
-    private Plan plan;
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)

@@ -30,7 +30,6 @@ public class Plan implements Serializable {
 
     // See how a reservation stores stayReservedDates in com.laioffer.staybooking.service.ReservationService
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
-    @Fetch(FetchMode.SUBSELECT)
     private List<DailyPlan> dailyPlanList;
 
     public Plan() {}
@@ -46,10 +45,6 @@ public class Plan implements Serializable {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public LocalDate getStartDate() {
