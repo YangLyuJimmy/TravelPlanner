@@ -25,7 +25,7 @@ public class DailyPlan implements Serializable {
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "daily_plan_points", joinColumns = {@JoinColumn(name = "daily_plan_id")}, inverseJoinColumns = {@JoinColumn(name = "point_id")})
-    List<Point> pointSet = new ArrayList<>();
+    List<Point> pointList = new ArrayList<>();
 
     public DailyPlan() {}
 
@@ -52,5 +52,13 @@ public class DailyPlan implements Serializable {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public List<Point> getPointList() {
+        return pointList;
+    }
+
+    public void setPointList(List<Point> pointList) {
+        this.pointList = pointList;
     }
 }
