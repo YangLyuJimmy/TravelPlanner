@@ -24,7 +24,7 @@ public class User implements Serializable {
     @JsonIgnore
     private boolean enabled;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REFRESH, fetch=FetchType.EAGER)
     private List<Plan> planList;
 
     public User() {}

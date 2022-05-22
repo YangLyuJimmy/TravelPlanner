@@ -38,7 +38,7 @@ public class Point implements Serializable {
 
     public Point() {}
 
-    private Point(Point.Builder builder) {
+    private Point(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
         this.rating = builder.rating;

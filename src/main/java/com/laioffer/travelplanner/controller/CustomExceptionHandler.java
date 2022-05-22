@@ -1,5 +1,6 @@
 package com.laioffer.travelplanner.controller;
 
+import com.laioffer.travelplanner.exception.PlanNotExistException;
 import com.laioffer.travelplanner.exception.UserAlreadyExistException;
 import com.laioffer.travelplanner.exception.UserNotExistException;
 import org.springframework.http.HttpStatus;
@@ -21,4 +22,8 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(PlanNotExistException.class)
+    public final ResponseEntity<String> handlePlanNotExistExceptions(Exception ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }
