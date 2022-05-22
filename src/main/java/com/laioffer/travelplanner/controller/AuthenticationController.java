@@ -22,5 +22,4 @@ public class AuthenticationController {
     public Token authenticateUser(@RequestBody User user) {
         return authenticationService.authenticate(user, UserRole.ROLE_USER);
     }
-
 }

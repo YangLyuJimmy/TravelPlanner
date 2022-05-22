@@ -1,5 +1,6 @@
 package com.laioffer.travelplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -40,6 +41,7 @@ public class Category implements Serializable {
         return pointSet;
     }
 
+    @JsonBackReference
     public void setPointSet(Set<Point> pointSet) {
         this.pointSet = pointSet;
     }

@@ -25,10 +25,10 @@ public class AuthenticationService {
         this.jwtUtil = jwtUtil;
     }
 
-    public Token authenticate(User user, UserRole role) throws UserNotExistException {
+    public Token authenticate(User whp, UserRole role) throws UserNotExistException {
         Authentication auth = null;
         try {
-            auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+            auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(whp.getUsername(), whp.getPassword()));
         } catch (AuthenticationException exception) {
             throw new UserNotExistException("User Doesn't Exist");
         }
@@ -36,7 +36,7 @@ public class AuthenticationService {
         if (!auth.getAuthorities().contains(new SimpleGrantedAuthority(role.name()))) {
             throw new UserNotExistException("User Doesn't Exist");
         }
-        return new Token(jwtUtil.generateToken(user.getUsername()));
+        return new Token(jwtUtil.generateToken(whp.getUsername()));
     }
 
 }

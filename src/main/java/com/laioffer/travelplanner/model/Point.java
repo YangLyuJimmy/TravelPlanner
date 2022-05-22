@@ -1,5 +1,6 @@
 package com.laioffer.travelplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -108,6 +109,7 @@ public class Point implements Serializable {
         return dailyPlanSet;
     }
 
+    @JsonBackReference
     public void setDailyPlanSet(Set<DailyPlan> dailyPlanSet) {
         this.dailyPlanSet = dailyPlanSet;
     }

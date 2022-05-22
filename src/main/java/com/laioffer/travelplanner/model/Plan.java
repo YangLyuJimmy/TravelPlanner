@@ -2,6 +2,7 @@ package com.laioffer.travelplanner.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -72,7 +73,7 @@ public class Plan implements Serializable {
     public User getUser() {
         return user;
     }
-
+    @JsonBackReference
     public void setUser(User user) {
         this.user = user;
     }

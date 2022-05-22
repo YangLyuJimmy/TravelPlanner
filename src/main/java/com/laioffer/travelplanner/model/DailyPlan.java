@@ -1,5 +1,7 @@
 package com.laioffer.travelplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -42,6 +44,7 @@ public class DailyPlan implements Serializable {
         return plan;
     }
 
+    @JsonBackReference
     public void setPlan(Plan plan) {
         this.plan = plan;
     }
