@@ -21,7 +21,7 @@ public class PlanService {
         this.planRepository = planRepository;
     }
 
-    public List<Plan> ListByUser(String username){
+    public List<Plan> listByUser(String username){
         return planRepository.findByUser(new User.Builder().setUsername(username).build());
     }
 

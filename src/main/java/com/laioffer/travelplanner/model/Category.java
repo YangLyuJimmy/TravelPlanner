@@ -21,6 +21,7 @@ public class Category implements Serializable {
     // Watch out conflict with the pointSet of DailyPlan!
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(mappedBy = "categorySet")
+    @JsonBackReference
     private Set<Point> pointSet= new HashSet<>();
 
     public Category() {}
@@ -41,7 +42,6 @@ public class Category implements Serializable {
         return pointSet;
     }
 
-    @JsonBackReference
     public void setPointSet(Set<Point> pointSet) {
         this.pointSet = pointSet;
     }

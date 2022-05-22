@@ -30,6 +30,7 @@ public class Point implements Serializable {
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(mappedBy = "pointList")
+    @JsonBackReference
     private Set<DailyPlan> dailyPlanSet= new HashSet<>();
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
@@ -109,7 +110,7 @@ public class Point implements Serializable {
         return dailyPlanSet;
     }
 
-    @JsonBackReference
+
     public void setDailyPlanSet(Set<DailyPlan> dailyPlanSet) {
         this.dailyPlanSet = dailyPlanSet;
     }

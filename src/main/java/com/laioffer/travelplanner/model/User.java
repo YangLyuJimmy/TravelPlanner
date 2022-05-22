@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -20,12 +21,16 @@ public class User implements Serializable {
     @JsonIgnore
     private String password;
     private String email;
+    @JsonProperty("first_name")
     private String firstName;
+    @JsonProperty("last_name")
     private String lastName;
     @JsonIgnore
     private boolean enabled;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.REFRESH, fetch=FetchType.EAGER)
+    @JsonProperty("plans")
     private List<Plan> planList;
 
     public User() {}
@@ -53,7 +58,6 @@ public class User implements Serializable {
         return password;
     }
 
-    @JsonBackReference
     public User setPassword(String password) {
         this.password = password;
         return this;
@@ -119,7 +123,7 @@ public class User implements Serializable {
         @JsonProperty("enabled")
         private boolean enabled;
 
-        @JsonProperty("plan_list")
+        @JsonProperty("plans")
         private List<Plan> planList;
 
         public Builder setUsername(String username) {
