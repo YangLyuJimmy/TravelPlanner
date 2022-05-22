@@ -3,6 +3,7 @@ package com.laioffer.travelplanner.model;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -19,16 +20,21 @@ public class Plan implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @JsonProperty("start_date")
     private LocalDate startDate;
+    @JsonProperty("end_date")
     private LocalDate endDate;
     private String note;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
     // See how a reservation stores stayReservedDates in com.laioffer.staybooking.service.ReservationService
     @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @JsonProperty("daily_plans")
+    @JsonManagedReference
     private List<DailyPlan> dailyPlanList;
 
     public Plan() {}
@@ -73,7 +79,7 @@ public class Plan implements Serializable {
     public User getUser() {
         return user;
     }
-    @JsonBackReference
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -98,7 +104,7 @@ public class Plan implements Serializable {
         @JsonProperty("user")
         private User user;
 
-        @JsonProperty("daily_plan_list")
+        @JsonProperty("daily_plans")
         private List<DailyPlan> dailyPlanList;
 
         public Builder setId(Long id) {

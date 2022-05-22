@@ -1,6 +1,7 @@
 package com.laioffer.travelplanner.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,6 +21,7 @@ public class DailyPlan implements Serializable {
     // column plan_id also is a foreign key of table plan
     @ManyToOne
     @JoinColumn(name = "plan_id")
+    @JsonBackReference
     private Plan plan;
 
     private LocalDate date;
@@ -27,6 +29,7 @@ public class DailyPlan implements Serializable {
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "daily_plan_points", joinColumns = {@JoinColumn(name = "daily_plan_id")}, inverseJoinColumns = {@JoinColumn(name = "point_id")})
+    @JsonProperty("points")
     List<Point> pointList = new ArrayList<>();
 
     public DailyPlan() {}
@@ -44,7 +47,6 @@ public class DailyPlan implements Serializable {
         return plan;
     }
 
-    @JsonBackReference
     public void setPlan(Plan plan) {
         this.plan = plan;
     }

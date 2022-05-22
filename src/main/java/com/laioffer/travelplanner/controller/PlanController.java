@@ -20,10 +20,10 @@ public class PlanController {
         this.planService = planService;
     }
 
-    @GetMapping(value = "/plans/{username}")
-    public List<Plan> listPlans(@PathVariable String username){
+    @GetMapping(value = "/plan")
+    public List<Plan> listPlans(Principal principal){
 
-        return planService.ListByUser(username);
+        return planService.listByUser(principal.getName());
     }
 
     @DeleteMapping("/plan/{planId}")
