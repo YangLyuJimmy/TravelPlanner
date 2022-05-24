@@ -25,8 +25,9 @@ public class Point implements Serializable {
     private Float latitude;
 
     // See how a stay stores images in com.laioffer.staybooking.service.StayService
-    @OneToMany(mappedBy = "point", cascade = CascadeType.ALL, fetch=FetchType.EAGER)
-    private List<PointImage> pointImages;
+    @JsonProperty("image")
+    private String imageUrl;
+
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(mappedBy = "pointList")
@@ -35,7 +36,9 @@ public class Point implements Serializable {
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinTable(name = "category_of_point", joinColumns = { @JoinColumn(name = "point_id")}, inverseJoinColumns = {@JoinColumn(name = "category_id")})
+    @JoinTable(name = "category_of_point",
+            joinColumns = { @JoinColumn(name = "point_id",referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id",referencedColumnName = "type")})
     Set<Category> categorySet = new HashSet<>();
 
     public Point() {}
@@ -47,7 +50,8 @@ public class Point implements Serializable {
         this.description = builder.description;
         this.longitude = builder.longitude;
         this.latitude = builder.latitude;
-        this.pointImages = builder.pointImages;
+        //this.pointImages = builder.pointImages;
+        this.imageUrl = builder.imageUrl;
     }
 
     public Long getId() {
@@ -98,13 +102,6 @@ public class Point implements Serializable {
         this.latitude = latitude;
     }
 
-    public List<PointImage> getPointImages() {
-        return pointImages;
-    }
-
-    public void setPointImages(List<PointImage> pointImages) {
-        this.pointImages = pointImages;
-    }
 
     public Set<DailyPlan> getDailyPlanSet() {
         return dailyPlanSet;
@@ -138,8 +135,8 @@ public class Point implements Serializable {
         @JsonProperty("latitude")
         private Float latitude;
 
-        @JsonProperty("point_images")
-        private List<PointImage> pointImages;
+        @JsonProperty("image")
+        private String imageUrl;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -171,8 +168,8 @@ public class Point implements Serializable {
             return this;
         }
 
-        public Builder setPointImages(List<PointImage> pointImages) {
-            this.pointImages = pointImages;
+        public Builder setImageUrl(String imageUrl){
+            this.imageUrl = imageUrl;
             return this;
         }
 
