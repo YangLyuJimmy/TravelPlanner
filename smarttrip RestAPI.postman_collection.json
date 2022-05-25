@@ -1,0 +1,312 @@
+{
+	"info": {
+		"_postman_id": "060b456e-cb1a-4c24-947a-952130ff8f72",
+		"name": "smarttrip RestAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19655915"
+	},
+	"item": [
+		{
+			"name": "Download Points",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/download?tr_lng=-118.064743&tr_lat=34.354388&bl_lng=-118.902627&bl_lat=33.695485",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"download"
+					],
+					"query": [
+						{
+							"key": "tr_lng",
+							"value": "-118.064743"
+						},
+						{
+							"key": "tr_lat",
+							"value": "34.354388"
+						},
+						{
+							"key": "bl_lng",
+							"value": "-118.902627"
+						},
+						{
+							"key": "bl_lat",
+							"value": "33.695485"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search All the Points",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/search/points",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"search",
+						"points"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search the Categorie List",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/search/categories",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"search",
+						"categories"
+					],
+					"query": [
+						{
+							"key": "category",
+							"value": "museums",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Points in a Category",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/search/category?category_name=Museums",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"search",
+						"category"
+					],
+					"query": [
+						{
+							"key": "category_name",
+							"value": "Museums"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Sign Up",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"libai\",\r\n    \"password\": \"1111\",\r\n    \"email\": \"libai@gmail.com\",\r\n    \"first_name\": \"Bai\",\r\n    \"last_name\": \"Li\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Sign In",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"libai\",\r\n    \"password\": \"1111\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/authenticate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Save a Plan",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkdWZ1IiwiZXhwIjoxNjUzNTI1NTc4LCJpYXQiOjE2NTM0MzkxNzh9.EVnyVAu82-74gZnZlzpyLxyKgHaX9HbbzdXdl0abJJg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"note\": \"Test save\",\r\n  \"daily_plans\": [\r\n    {\r\n      \"date\": \"2022-10-01\",\r\n      \"points\": [\r\n        {\r\n          \"id\": \"102949\"\r\n        },\r\n        {\r\n          \"id\": \"127423\"\r\n        },\r\n        {\r\n          \"id\": \"129372\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"date\": \"2022-10-02\",\r\n      \"points\": [\r\n        {\r\n          \"id\": \"144147\"\r\n        },\r\n        {\r\n          \"id\": \"145836\"\r\n        },\r\n        {\r\n          \"id\": \"146163\"\r\n        }\r\n      ]\r\n    },\r\n    {\r\n      \"date\": \"2022-10-03\",\r\n      \"points\": [\r\n        {\r\n          \"id\": \"156425\"\r\n        },\r\n        {\r\n          \"id\": \"266789\"\r\n        },\r\n        {\r\n          \"id\": \"272295\"\r\n        }\r\n      ]\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/plan",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"plan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Get All Plans",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkdWZ1IiwiZXhwIjoxNjUzNTI1NTc4LCJpYXQiOjE2NTM0MzkxNzh9.EVnyVAu82-74gZnZlzpyLxyKgHaX9HbbzdXdl0abJJg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/plan",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"plan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Delete a Plan",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkdWZ1IiwiZXhwIjoxNjUzNTI1NTc4LCJpYXQiOjE2NTM0MzkxNzh9.EVnyVAu82-74gZnZlzpyLxyKgHaX9HbbzdXdl0abJJg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/plan/13",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"plan",
+						"13"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
