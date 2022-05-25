@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,10 +23,8 @@ public class Point implements Serializable {
     private Float longitude;
     private Float latitude;
 
-    // See how a stay stores images in com.laioffer.staybooking.service.StayService
     @JsonProperty("image")
     private String imageUrl;
-
 
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(mappedBy = "pointList")
@@ -38,7 +35,8 @@ public class Point implements Serializable {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "category_of_point",
             joinColumns = { @JoinColumn(name = "point_id",referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "category_id",referencedColumnName = "type")})
+            inverseJoinColumns = {@JoinColumn(name = "category_id",referencedColumnName = "type")},
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"point_id", "category_id"})})
     Set<Category> categorySet = new HashSet<>();
 
     public Point() {}
@@ -50,7 +48,6 @@ public class Point implements Serializable {
         this.description = builder.description;
         this.longitude = builder.longitude;
         this.latitude = builder.latitude;
-        //this.pointImages = builder.pointImages;
         this.imageUrl = builder.imageUrl;
     }
 
@@ -102,11 +99,9 @@ public class Point implements Serializable {
         this.latitude = latitude;
     }
 
-
     public Set<DailyPlan> getDailyPlanSet() {
         return dailyPlanSet;
     }
-
 
     public void setDailyPlanSet(Set<DailyPlan> dailyPlanSet) {
         this.dailyPlanSet = dailyPlanSet;
@@ -134,7 +129,6 @@ public class Point implements Serializable {
         private Float longitude;
         @JsonProperty("latitude")
         private Float latitude;
-
         @JsonProperty("image")
         private String imageUrl;
 

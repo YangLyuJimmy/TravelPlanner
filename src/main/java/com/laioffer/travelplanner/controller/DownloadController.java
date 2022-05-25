@@ -1,71 +1,58 @@
 package com.laioffer.travelplanner.controller;
 
-import com.laioffer.travelplanner.service.CategoryService;
-import com.laioffer.travelplanner.service.PointService;
-import com.laioffer.travelplanner.service.RapidAPIException;
+import com.laioffer.travelplanner.service.DownloadService;
+import com.laioffer.travelplanner.exception.DownloadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URISyntaxException;
 
 
 @RestController
 public class DownloadController {
 
-    private PointService pointService;
-    private CategoryService categoryService;
+    private DownloadService downloadService;
 
     @Autowired
-    public DownloadController(PointService pointService, CategoryService categoryService) {
-        this.pointService = pointService;
-        this.categoryService = categoryService;
+    public DownloadController(DownloadService downloadService) {
+        this.downloadService = downloadService;
     }
 
 //        LA map coordinates:
-    //    WeiDu:
+//        Latitude:
 //        top_lat = 34.354388;
 //        mid_lat = 34.0249365;
 //        bottom_lat = 33.695485;
-    //    JingDu:
+//
+//        Longitude:
 //        left_lng = -118.902627;
 //        mid_lng = -118.483685;
 //        right_lng = -118.064743;
 //
 
-    // run http://localhost:8080/downloadtest to download all points (without category set yet).
-    // You can rename the API value to "download" if you'd like. :)  It might make more sense
-    @RequestMapping(value = "/downloadtest", method = RequestMethod.POST)
-    public void downloadPointswithP(@RequestParam(value = "tr_lng", required = true) String tr_lng,
+//     run http://localhost:8080/download to download all the points.
+    @PostMapping(value = "/download")
+    public void download(@RequestParam(value = "tr_lng", required = true) String tr_lng,
                                     @RequestParam(value = "tr_lat", required = true) String tr_lat,
                                     @RequestParam(value = "bl_lng", required = true) String bl_lng,
-                                    @RequestParam(value = "bl_lat", required = true) String bl_lat) throws RapidAPIException {
+                                    @RequestParam(value = "bl_lat", required = true) String bl_lat) {
 
-        try {// please refer to pointService for method details
-            pointService.downloadPoints(Double.parseDouble(tr_lng), Double.parseDouble(tr_lat), Double.parseDouble(bl_lng), Double.parseDouble(bl_lat));
-        } catch (RapidAPIException e) {
+        Double trLng = Double.parseDouble(tr_lng);
+        Double trLat = Double.parseDouble(tr_lat);
+        Double blLng = Double.parseDouble(bl_lng);
+        Double blLat = Double.parseDouble(bl_lat);
+
+        Double midLng = (trLng + blLng) / 2;
+        Double midLat = (trLat + blLat) / 2;
+
+        try {// please refer to downloadService for method details
+            downloadService.download(trLng, trLat, midLng, midLat);
+            downloadService.download(midLng, trLat, blLng, midLat);
+            downloadService.download(midLng, midLat, blLng, blLat);
+            downloadService.download(trLng, midLat, midLng, blLat);
+        } catch (DownloadException e) {
             e.printStackTrace();
-            throw new RapidAPIException("Failed to downloadPoints");
+            throw new DownloadException("Failed to download points");
         }
     }
 
-    // run http://localhost:8080/downloadCate to download all category sets for each point
-    @RequestMapping(value = "/downloadCate", method = RequestMethod.POST)
-    public void downloadCate(@RequestParam(value = "tr_lng", required = true) String tr_lng,
-                             @RequestParam(value = "tr_lat", required = true) String tr_lat,
-                             @RequestParam(value = "bl_lng", required = true) String bl_lng,
-                             @RequestParam(value = "bl_lat", required = true) String bl_lat) throws RapidAPIException {
-        try {
-            categoryService.downloadCategory(pointService.searchRapidAPI(pointService.buildRapidAPIURL(
-                    "https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary",
-                    Double.parseDouble(tr_lng),
-                    Double.parseDouble(tr_lat),
-                    Double.parseDouble(bl_lng),
-                    Double.parseDouble(bl_lat)
-            )));
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-    }
 }
 

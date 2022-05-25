@@ -1,58 +1,62 @@
 package com.laioffer.travelplanner.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.laioffer.travelplanner.service.CategoryService;
-import com.laioffer.travelplanner.service.PointService;
-import com.laioffer.travelplanner.service.RapidAPIException;
+import com.laioffer.travelplanner.model.Category;
+import com.laioffer.travelplanner.model.Point;
+import com.laioffer.travelplanner.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.util.List;
 
 @RestController
 public class SearchController {
 
-    private PointService pointService;
-    private CategoryService categoryService;
+    private SearchService searchService;
 
     @Autowired
-    public SearchController(PointService pointService, CategoryService categoryService){
-        this.pointService = pointService;
-        this.categoryService = categoryService;
+    public SearchController(SearchService searchService){
+        this.searchService = searchService;
     }
 
-    // when frontend call http://localhost:8080/search without parameters, we return all points
+    // when frontend call http://localhost:8080/search/points, we return all the points
+    @GetMapping(value = "/search/points")
+    public List<Point> getPoints() {
+        return searchService.getAllPoints();
+    }
+
+    // when frontend call http://localhost:8080/search/categories, we return all the categories in a list
+    @GetMapping(value = "/search/categories")
+    public List<Category> getCategories() {
+        return searchService.getCategoryList();
+    }
+
+    // when frontend call http://localhost:8080/search/category/{category_name}, we return points under that category
+    @GetMapping(value = "/search/category")
+    public List<Point> getPoints(@RequestParam(value = "category_name", required = true) String categoryName) {
+        return searchService.getPointsbyCate(categoryName);
+    }
+
+  // when frontend call http://localhost:8080/search without parameters, we return all the points
     // when with parameter "category", input category name, we return all points under that category
-    // when with parameter "categoryList", input anything (as long as it's not null), we return the complete category list.
-    @RequestMapping(value="/search", method= RequestMethod.GET)
+    // when with parameter "category_list", input "TRUE"), we return the complete category list.
+    @GetMapping(value = "/search")
     public void getPoints(@RequestParam(value ="category", required = false) String category,
-                          @RequestParam(value = "categoryList", required = false) String getCateList,
-                          HttpServletResponse response)
-            throws IOException, ServletException{
+                          @RequestParam(value = "category_list", required = false) String getCateList,
+                          HttpServletResponse response) throws IOException {
 
         response.setContentType("application/json;charset=UTF-8");
 
-        try{
-            if(category !=null ){
-                response.getWriter().print(new ObjectMapper().writeValueAsString(pointService.getPointsbyCate(category)));
-            } else if(getCateList !=null) {
-                response.getWriter().print(new ObjectMapper().writeValueAsString(categoryService.getCategoryList()));
-            }else{
-                response.getWriter().print(new ObjectMapper().writeValueAsString(pointService.getAllPoints()));
-            }
-        } catch (RapidAPIException e){
-            throw new ServletException(e);
-        } catch (URISyntaxException e){
-            e.printStackTrace();
+        if(category != null ){
+            response.getWriter().print(new ObjectMapper().writeValueAsString(searchService.getPointsbyCate(category)));
+        } else if (getCateList != null && getCateList.equals("TRUE")) {
+            response.getWriter().print(new ObjectMapper().writeValueAsString(searchService.getCategoryList()));
+        } else {
+            response.getWriter().print(new ObjectMapper().writeValueAsString(searchService.getAllPoints()));
         }
+
     }
-
-
 }
 

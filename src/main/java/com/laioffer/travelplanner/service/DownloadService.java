@@ -1,10 +1,14 @@
 package com.laioffer.travelplanner.service;
 
+import com.laioffer.travelplanner.exception.DownloadException;
+import com.laioffer.travelplanner.model.Category;
+import com.laioffer.travelplanner.model.Point;
 import com.laioffer.travelplanner.repository.CategoryRepository;
 import com.laioffer.travelplanner.repository.PointRepository;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -12,27 +16,20 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.http.client.utils.URIBuilder;
-
-import com.laioffer.travelplanner.model.Point;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.*;
-
 
 @Service
-public class PointService {
+public class DownloadService {
 
     private PointRepository pointRepository;
     private CategoryRepository categoryRepository;
 
     @Autowired
-    public PointService(PointRepository pointRepository, CategoryRepository categoryRepository){
+    public DownloadService(PointRepository pointRepository, CategoryRepository categoryRepository){
         this.pointRepository = pointRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -41,7 +38,7 @@ public class PointService {
     private static final String RapidAPI_URL = "https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary";
 
     //this method is to build rapidAPI url with coordinates input
-    public String buildRapidAPIURL(String url, double tr_lng, double tr_lat, double bl_lng, double bl_lat) throws URISyntaxException {
+    private String buildRapidAPIURL(String url, double tr_lng, double tr_lat, double bl_lng, double bl_lat) throws URISyntaxException {
         //encode parameters into URL string
         String trLng = new String();
         String trLat = new String();
@@ -68,7 +65,7 @@ public class PointService {
     }
 
     //this method is to deserialize the JSON response we get from rapid API (only the "data" portion with all points info) to a String
-    public String searchRapidAPI(String url) throws RapidAPIException {
+    private String searchRapidAPI(String url) throws DownloadException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         ResponseHandler<String> responseHandler = response -> {
@@ -76,13 +73,13 @@ public class PointService {
 
             if(responseCode != 200) {
                 System.out.printf("Response status: " + response.getStatusLine().getReasonPhrase());
-                throw new RapidAPIException("Failed to get result from Rapid API");
+                throw new DownloadException("Failed to get result from Rapid API");
             }
 
             HttpEntity entity = response.getEntity();
 
             if(entity == null){
-                throw new RapidAPIException("Failed to get result from Rapid API");
+                throw new DownloadException("Failed to get result from Rapid API");
             }
             JSONObject obj = new JSONObject(EntityUtils.toString(entity));
             return obj.getJSONArray("data").toString();
@@ -97,7 +94,7 @@ public class PointService {
 
         } catch (IOException e){
             e.printStackTrace();;
-            throw new RapidAPIException("Failed to get result from Rapid API");
+            throw new DownloadException("Failed to get result from Rapid API");
         } finally {
             try{
                 httpClient.close();
@@ -107,8 +104,8 @@ public class PointService {
         }
     }
 
-    //this method is to parse the String (the deserialized rapidAPI response), get the points details, and save to point table
-    private void parseRapidAPI(String data) throws RapidAPIException {
+    //this method is to parse the String (the deserialized rapidAPI response), and save the points into DB
+    private void parseRapidAPI(String data) throws DownloadException {
         //we want to read through the 33 items under data JSON array (from 0~32)  and skip 6, 15, 24;
         JSONArray API_dataArray = new JSONArray(data);
         try {
@@ -116,55 +113,54 @@ public class PointService {
                 if (i != 6 && i != 15 && i != 24) {//skip ads at 6, 15, 24
                     JSONObject dataItem = API_dataArray.getJSONObject(i);
                     if (!pointRepository.existsById(Long.parseLong(dataItem.getString("location_id")))) {
-                        //if this item already exists in DB, do nothing
-                        //} else {//save point in repository
-                        Point.Builder builder = new Point.Builder();
-                        builder.setId(Long.parseLong(dataItem.getString("location_id")))
+                        //if this point has already existed in DB, skip, else save the point
+                        Point newPoint = new Point.Builder()
+                                .setId(Long.parseLong(dataItem.getString("location_id")))
                                 .setName(dataItem.getString("name"))
                                 .setLatitude(Float.parseFloat(dataItem.getString("latitude")))
                                 .setLongitude(Float.parseFloat(dataItem.getString("longitude")))
-                                .setDescription(dataItem.getString("description").length() > 255 ? dataItem.getString("description").substring(0,250) : dataItem.getString("description"))
+                                .setDescription(dataItem.getString("description").length() > 255 ? (dataItem.getString("description").substring(0,250) + "...") : dataItem.getString("description"))
                                 .setRating(Float.parseFloat(dataItem.getString("rating")))
-                                .setImageUrl(dataItem.getJSONObject("photo").getJSONObject("images").getJSONObject("original").getString("url"));
+                                .setImageUrl(dataItem.getJSONObject("photo").getJSONObject("images").getJSONObject("original").getString("url"))
+                                .build();
 
-                        Point newPoint = builder.build();
-                        try {
-                            pointRepository.save(newPoint);
-                        } catch(Exception e){
-                            e.printStackTrace();
+                        Point savedPoint = pointRepository.save(newPoint);
+
+                        //add categorySet by looping through subcategory JSONArray
+                        JSONArray CategoryArray = dataItem.getJSONArray("subcategory");
+                        if (CategoryArray != null && CategoryArray.length() != 0) {
+                            for (int cateIndex = 0; cateIndex < CategoryArray.length(); cateIndex++) {
+                                if (!categoryRepository.existsByType(CategoryArray.getJSONObject(cateIndex).getString("name"))) {//if category does not exist in repository
+                                    Category newCate = new Category.Builder()
+                                            .setType(CategoryArray.getJSONObject(cateIndex).getString("name"))
+                                            .build();
+                                    savedPoint.getCategorySet().add(newCate);
+                                    pointRepository.save(savedPoint);
+                                } else {//if subcategory has already existed in categoryRepository
+                                    Category existingCate = categoryRepository.getById(CategoryArray.getJSONObject(cateIndex).getString("name"));
+                                    savedPoint.getCategorySet().add(existingCate);
+                                    pointRepository.save(savedPoint);
+                                }
+                            }
                         }
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RapidAPIException("Failed to parse point data from Rapid API");
+            throw new DownloadException("Failed to parse data from Rapid API");
         }
     }
 
-    //this method is for DownloadController. It is to download all points in the given map area (need top right & bottom left coordinates) utilizing all methods above
-    public void downloadPoints(double tr_lng, double tr_lat, double bl_lng, double bl_lat) throws RapidAPIException{
-        try {//top left section
+    //this method is to download all the points in the given map area
+    //(need top right & bottom left coordinates) utilizing all methods above
+    public void download(double tr_lng, double tr_lat, double bl_lng, double bl_lat) throws DownloadException {
+        try {
             parseRapidAPI(searchRapidAPI(buildRapidAPIURL(RapidAPI_URL, tr_lng, tr_lat, bl_lng, bl_lat)));
-        } catch (RapidAPIException | URISyntaxException e){
+        } catch (DownloadException | URISyntaxException e){
             e.printStackTrace();
-            throw new RapidAPIException("Failed to get response");
+            throw new DownloadException("Failed to download points and categories");
         }
-    }
-
-    //this method is for SearchController. It is to return all points to search request without parameters.
-    public List<Point> getAllPoints() throws RapidAPIException, URISyntaxException {
-        return pointRepository.findAll();
-    }
-
-    //this method is for SearchController. It is to return points by category to search request with parameter "category"
-    public List<Point> getPointsbyCate(String categoryName){
-
-        Set<Point> resultSet = categoryRepository.findById(categoryName).get().getPointSet();
-
-        List<Point> resultList = new ArrayList<>(resultSet);
-
-        return resultList;
     }
 
 }
