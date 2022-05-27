@@ -105,7 +105,7 @@ public class DownloadService {
     }
 
     //this method is to parse the String (the deserialized rapidAPI response), and save the points into DB
-    private void parseRapidAPI(String data) throws DownloadException {
+    private void parseRapidAPI(String data, String location) throws DownloadException {
         //we want to read through the 33 items under data JSON array (from 0~32)  and skip 6, 15, 24;
         JSONArray API_dataArray = new JSONArray(data);
         try {
@@ -122,22 +122,26 @@ public class DownloadService {
                                 .setDescription(dataItem.getString("description").length() > 255 ? (dataItem.getString("description").substring(0,250) + "...") : dataItem.getString("description"))
                                 .setRating(Float.parseFloat(dataItem.getString("rating")))
                                 .setImageUrl(dataItem.getJSONObject("photo").getJSONObject("images").getJSONObject("original").getString("url"))
+                                .setLocation(location)
                                 .build();
 
                         Point savedPoint = pointRepository.save(newPoint);
 
                         //add categorySet by looping through subcategory JSONArray
-                        JSONArray CategoryArray = dataItem.getJSONArray("subcategory");
-                        if (CategoryArray != null && CategoryArray.length() != 0) {
-                            for (int cateIndex = 0; cateIndex < CategoryArray.length(); cateIndex++) {
-                                if (!categoryRepository.existsByType(CategoryArray.getJSONObject(cateIndex).getString("name"))) {//if category does not exist in repository
+                        JSONArray categoryArray = dataItem.getJSONArray("subcategory");
+                        if (categoryArray != null && categoryArray.length() != 0) {
+                            for (int cateIndex = 0; cateIndex < categoryArray.length(); cateIndex++) {
+                                String subCategoryName = categoryArray.getJSONObject(cateIndex).getString("name");
+
+                                if (!categoryRepository.existsByTypeAndLocation(subCategoryName, location)) {//if category does not exist in repository
                                     Category newCate = new Category.Builder()
-                                            .setType(CategoryArray.getJSONObject(cateIndex).getString("name"))
+                                            .setType(subCategoryName)
+                                            .setLocation(location)
                                             .build();
                                     savedPoint.getCategorySet().add(newCate);
                                     pointRepository.save(savedPoint);
                                 } else {//if subcategory has already existed in categoryRepository
-                                    Category existingCate = categoryRepository.getById(CategoryArray.getJSONObject(cateIndex).getString("name"));
+                                    Category existingCate = categoryRepository.getByTypeAndLocation(subCategoryName, location);
                                     savedPoint.getCategorySet().add(existingCate);
                                     pointRepository.save(savedPoint);
                                 }
@@ -154,9 +158,9 @@ public class DownloadService {
 
     //this method is to download all the points in the given map area
     //(need top right & bottom left coordinates) utilizing all methods above
-    public void download(double tr_lng, double tr_lat, double bl_lng, double bl_lat) throws DownloadException {
+    public void download(double tr_lng, double tr_lat, double bl_lng, double bl_lat, String location) throws DownloadException {
         try {
-            parseRapidAPI(searchRapidAPI(buildRapidAPIURL(RapidAPI_URL, tr_lng, tr_lat, bl_lng, bl_lat)));
+            parseRapidAPI(searchRapidAPI(buildRapidAPIURL(RapidAPI_URL, tr_lng, tr_lat, bl_lng, bl_lat)), location);
         } catch (DownloadException | URISyntaxException e){
             e.printStackTrace();
             throw new DownloadException("Failed to download points and categories");

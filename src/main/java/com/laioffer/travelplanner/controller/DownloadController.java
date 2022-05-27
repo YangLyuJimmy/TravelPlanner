@@ -31,9 +31,10 @@ public class DownloadController {
 //     run http://localhost:8080/download to download all the points.
     @PostMapping(value = "/download")
     public void download(@RequestParam(value = "tr_lng", required = true) String tr_lng,
-                                    @RequestParam(value = "tr_lat", required = true) String tr_lat,
-                                    @RequestParam(value = "bl_lng", required = true) String bl_lng,
-                                    @RequestParam(value = "bl_lat", required = true) String bl_lat) {
+                         @RequestParam(value = "tr_lat", required = true) String tr_lat,
+                         @RequestParam(value = "bl_lng", required = true) String bl_lng,
+                         @RequestParam(value = "bl_lat", required = true) String bl_lat,
+                         @RequestParam(value = "location", required = true) String location) {
 
         Double trLng = Double.parseDouble(tr_lng);
         Double trLat = Double.parseDouble(tr_lat);
@@ -43,15 +44,11 @@ public class DownloadController {
         Double midLng = (trLng + blLng) / 2;
         Double midLat = (trLat + blLat) / 2;
 
-        try {// please refer to downloadService for method details
-            downloadService.download(trLng, trLat, midLng, midLat);
-            downloadService.download(midLng, trLat, blLng, midLat);
-            downloadService.download(midLng, midLat, blLng, blLat);
-            downloadService.download(trLng, midLat, midLng, blLat);
-        } catch (DownloadException e) {
-            e.printStackTrace();
-            throw new DownloadException("Failed to download points");
-        }
+        downloadService.download(trLng, trLat, midLng, midLat, location);
+        downloadService.download(midLng, trLat, blLng, midLat, location);
+        downloadService.download(midLng, midLat, blLng, blLat, location);
+        downloadService.download(trLng, midLat, midLng, blLat, location);
+
     }
 
 }
