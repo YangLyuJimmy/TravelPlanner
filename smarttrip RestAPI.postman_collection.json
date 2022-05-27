@@ -24,7 +24,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/download?tr_lng=-118.064743&tr_lat=34.354388&bl_lng=-118.902627&bl_lat=33.695485",
+					"raw": "http://localhost:8080/download?tr_lng=-118.064743&tr_lat=34.354388&bl_lng=-118.902627&bl_lat=33.695485&location=Los_Angeles",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -49,6 +49,10 @@
 						{
 							"key": "bl_lat",
 							"value": "33.695485"
+						},
+						{
+							"key": "location",
+							"value": "Los_Angeles"
 						}
 					]
 				}
@@ -64,7 +68,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/search/points",
+					"raw": "http://localhost:8080/search/points?location=Beijing",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -73,13 +77,19 @@
 					"path": [
 						"search",
 						"points"
+					],
+					"query": [
+						{
+							"key": "location",
+							"value": "Beijing"
+						}
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Search the Categorie List",
+			"name": "Search the Category List",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -87,7 +97,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/search/categories",
+					"raw": "http://localhost:8080/search/categories?location=Beijing",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -99,9 +109,8 @@
 					],
 					"query": [
 						{
-							"key": "category",
-							"value": "museums",
-							"disabled": true
+							"key": "location",
+							"value": "Beijing"
 						}
 					]
 				}
@@ -109,7 +118,7 @@
 			"response": []
 		},
 		{
-			"name": "Search Points in a Category",
+			"name": "Search Points Under a Category",
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -117,7 +126,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/search/category?category_name=Museums",
+					"raw": "http://localhost:8080/search/category?location=Los_Angeles&category_name=Museums",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -128,6 +137,10 @@
 						"category"
 					],
 					"query": [
+						{
+							"key": "location",
+							"value": "Los_Angeles"
+						},
 						{
 							"key": "category_name",
 							"value": "Museums"

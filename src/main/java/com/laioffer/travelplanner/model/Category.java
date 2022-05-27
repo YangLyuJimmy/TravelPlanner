@@ -16,10 +16,13 @@ public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     private String type;
 
-    // Watch out conflict with the pointSet of DailyPlan!
-    // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
+    private String location;
+
     @ManyToMany(mappedBy = "categorySet")
     @JsonBackReference
     private Set<Point> pointSet= new HashSet<>();
@@ -27,7 +30,13 @@ public class Category implements Serializable {
     public Category() {}
 
     private Category(Builder builder) {
+        this.id = builder.id;
         this.type = builder.type;
+        this.location = builder.location;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getType() {
@@ -36,6 +45,14 @@ public class Category implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Set<Point> getPointSet() {
@@ -47,14 +64,26 @@ public class Category implements Serializable {
     }
 
     public static class Builder {
-        // type matches with a name of a subcategory in the ResponseBody of TravelAdvisor API
-        // But whether a category should be created in Builder Pattern hasn't been decided yet
-        // so the value in @JsonProperty() is only temporarily "name".
+        @JsonProperty("id")
+        private Long id;
+
         @JsonProperty("name")
         private String type;
 
+        private String location;
+
+        public Builder setId(Long id) {
+            this.id = id;
+            return this;
+        }
+
         public Builder setType(String type) {
             this.type = type;
+            return this;
+        }
+
+        public Builder setLocation(String location) {
+            this.location = location;
             return this;
         }
 

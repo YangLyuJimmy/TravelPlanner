@@ -26,6 +26,8 @@ public class Point implements Serializable {
     @JsonProperty("image")
     private String imageUrl;
 
+    private String location;
+
     // See how a user stores items in com.laioffer.jupiter.dao.FavoriteDao
     @ManyToMany(mappedBy = "pointList")
     @JsonBackReference
@@ -35,7 +37,7 @@ public class Point implements Serializable {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "category_of_point",
             joinColumns = { @JoinColumn(name = "point_id",referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "category_id",referencedColumnName = "type")},
+            inverseJoinColumns = {@JoinColumn(name = "category_id",referencedColumnName = "id")},
             uniqueConstraints = {@UniqueConstraint(columnNames = {"point_id", "category_id"})})
     Set<Category> categorySet = new HashSet<>();
 
@@ -49,6 +51,7 @@ public class Point implements Serializable {
         this.longitude = builder.longitude;
         this.latitude = builder.latitude;
         this.imageUrl = builder.imageUrl;
+        this.location = builder.location;
     }
 
     public Long getId() {
@@ -99,6 +102,22 @@ public class Point implements Serializable {
         this.latitude = latitude;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public Set<DailyPlan> getDailyPlanSet() {
         return dailyPlanSet;
     }
@@ -131,6 +150,9 @@ public class Point implements Serializable {
         private Float latitude;
         @JsonProperty("image")
         private String imageUrl;
+        @JsonProperty("location")
+        private String location;
+
 
         public Builder setId(Long id) {
             this.id = id;
@@ -164,6 +186,11 @@ public class Point implements Serializable {
 
         public Builder setImageUrl(String imageUrl){
             this.imageUrl = imageUrl;
+            return this;
+        }
+
+        public Builder setLocation(String location) {
+            this.location = location;
             return this;
         }
 

@@ -24,8 +24,8 @@ public class SearchService {
     }
 
     //this method is to return all the points.
-    public List<Point> getAllPoints() throws SearchException {
-        List<Point> allPoints = pointRepository.findAll();
+    public List<Point> getAllPoints(String location) throws SearchException {
+        List<Point> allPoints = pointRepository.findByLocation(location);
 
         if (allPoints == null || allPoints.isEmpty()) {
             throw new SearchException("There hasn't stored any points");
@@ -35,8 +35,8 @@ public class SearchService {
     }
 
     //this method is to return all the categories in a list.
-    public List<Category> getCategoryList() throws SearchException {
-        List<Category> categoryList = categoryRepository.findAll();
+    public List<Category> getCategoryList(String location) throws SearchException {
+        List<Category> categoryList = categoryRepository.findByLocation(location);
 
         if (categoryList == null || categoryList.isEmpty()) {
             throw new SearchException("There hasn't stored any categories");
@@ -46,11 +46,11 @@ public class SearchService {
     }
 
     //this method is to return points by category.
-    public List<Point> getPointsbyCate(String categoryName) throws SearchException {
+    public List<Point> getPointsbyCate(String location, String categoryName) throws SearchException {
 
         Set<Point> resultSet = null;
         try {
-            resultSet = categoryRepository.findById(categoryName).get().getPointSet();
+            resultSet = categoryRepository.findByTypeAndLocation(categoryName, location).getPointSet();
         } catch (Exception e) {
             throw new SearchException("No or wrong category name");
         }

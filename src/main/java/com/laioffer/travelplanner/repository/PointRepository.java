@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PointRepository extends JpaRepository<Point, Long> {
-    boolean existsById(Long location_id);
+    boolean existsById(Long id);
 
+    List<Point> findByLocation(String location);
 }
