@@ -34,7 +34,7 @@ public class DownloadService {
         this.categoryRepository = categoryRepository;
     }
 
-    private static final String APIKey = "3fae250c5fmsh22b6591d898cc59p1f2400jsn475895513a13";
+    private static final String APIKey = "b198a36a29msh4a908174eaa95c8p17c6dcjsn416b46e5db4e";
     private static final String RapidAPI_URL = "https://travel-advisor.p.rapidapi.com/attractions/list-in-boundary";
 
     //this method is to build rapidAPI url with coordinates input
